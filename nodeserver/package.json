@@ -1,0 +1,25 @@
+{
+  "name": "nodeserver",
+  "version": "1.0.0",
+  "description": "Team Goat Node Server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antonio0/autofashion"
+  },
+  "keywords": [
+    "fashion"
+  ],
+  "author": "Team Goat",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/antonio0/autofashion/issues"
+  },
+  "homepage": "https://github.com/antonio0/autofashion",
+  "dependencies": {
+    "express": "~4.9.8"
+  }
+}
