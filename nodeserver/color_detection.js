@@ -1,6 +1,5 @@
 module.exports = {
   getColor: function(imageName, res) {
-    console.log(imageName);
     colorDetect(imageName, res);
   }
 };

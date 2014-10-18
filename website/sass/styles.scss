@@ -1,0 +1,67 @@
+@import "bootstrap-compass";
+@import "bootstrap-variables";
+@import "bootstrap";
+@import url(http://fonts.googleapis.com/css?family=Lato:300);
+
+body {
+  background-color: #000;
+
+  font-family: 'Lato', sans-serif;
+  color: #fff;
+}
+
+#camera {
+  position: fixed;
+  
+  top: 50%;
+  left: 50%;
+  margin-top: -50%;
+  margin-left: -50%;
+
+  width: 100%;
+  background-color: #666;
+
+  z-index: 1;
+}
+
+.footer {
+  position: fixed;
+
+  bottom: 0;
+  right: 0;
+  margin-right: 10px;
+
+  z-index: 9999;
+}
+
+.posture {
+  position: fixed;
+
+  top: 28%;
+  left: 45%;
+
+  opacity: 0.3;
+
+  -ms-transform: scale(2.0, 2.0);
+  -webkit-transform: scale(2.0, 2.0);
+  transform: scale(2.0, 2.0);
+
+  z-index: 9999;
+}
+
+.instruction {
+  position: fixed;
+
+  margin-left: 30px;
+  margin-top: 10px;
+
+  z-index: 9999;
+}
+
+.instruction h1 {
+  font-size: 40px;
+}
+
+.instruction p {
+  font-size: 30px;
+}
