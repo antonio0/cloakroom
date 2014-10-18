@@ -9,8 +9,9 @@ app.get('/', function (req, res) {
   res.send('Hello World!')
 })
 
-
-
+app.post('/clothes', function (req, res) {
+  var color = req.param('color');
+})
 
 var server = app.listen(3001, function () {
 
