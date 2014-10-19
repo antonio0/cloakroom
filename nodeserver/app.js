@@ -14,6 +14,14 @@ app.all('/*', function (req, res, next) {
         next();
       });
 
+app.post('/color_detect', function(req, res) {
+  var form = new formidable.IncomingForm();
+  form.parse(req, function(err, field, files){});
+  form.on('end', function(fields, files) {
+    var fullname = this.openedFiles[0].path;
+    detect.getColor(fullname, res);
+  });  
+})
 
 app.get('/', function (req, res) {
   res.send('Hello World!')
