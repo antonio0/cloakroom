@@ -1,14 +1,25 @@
+var ntc = require('./ntc.js');
 module.exports = {
   getColor: function(imageName, res) {
+    console.log(ntc.name(rgbToHex(0,0,0)));
     colorDetect(imageName, res);
   }
 };
 
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
 
 var cv = require('opencv');
 var colorDetect = function(imageName, res ) {
  cv.readImage(imageName, function(err, im){
    im.detectObject(cv.FACE_CASCADE, {}, function(err, faces){
+   im.gaussianBlur();
    var buckets = [0, 0, 0, 0, 0, 0, 0, 0];
 
    if( faces.length == 0 )
@@ -32,14 +43,23 @@ var colorDetect = function(imageName, res ) {
 	{ 
                 var pixel = im.pixel(bodyXStart+j, bodyYStart+i);
                 buckets[getColorIndex(getHSV(pixel[0], pixel[1], pixel[2]))]++;	
+		col[0] += pixel[0];
+		col[1] += pixel[1];
+		col[2] += pixel[2];
+		tot++;
 	}
    }
    for( var t = 0; t < 8; t++ )
    {
      console.log(getColorNameFromIndex(t) + " : " + buckets[t]);
    }
-   im.ellipse(bodyXStart+bodyWidth/2, bodyYStart+bodySize/2,bodyWidth/2, bodySize/2);
+   im.ellipse(bodyXStart+bodyWidth/2, bodyYStart+bodySize/2, bodyWidth/2, bodySize/2);
    im.save('./out.jpg');
+   col[0] /= tot;
+   col[1] /= tot;
+   col[2] /= tot;
+   console.log(col);
+   // res.json({'color' : getColorName(getHSV(col[0], col[1], col[2]))});
    res.json( {'color' : getColorNameFromIndex(getMaxIndex(buckets)) } );
   });
 })
@@ -61,24 +81,24 @@ var getMaxIndex = function(c) {
 
 var getColorIndex = function(c) 
 {
-/*  if( c[1] < 0.15 && c[2] < 0.2 )
+  if( c[1] < 0.15 && c[2] > 0.15  && c[2] < 0.3 )
     return 0;
-  else if( c[2] > 0.8 && c[1] < 0.15  )
+  else if( c[2] > 0.6 && c[1] < 0.15  )
     return 1;
   else if( c[2] < 0.15 )
     return 2;
-  else*/ if( c[0] < 60 )
+  else if( c[0] < 30 )
     return 3;
-  else if( c[0] < 120 )
+  else if( c[0] < 70 )
     return 4;
-  else if( c[0] < 180 )
+  else if( c[0] < 150 )
     return 5;
-  else if( c[0] < 240 )
+  else if( c[0] < 270 )
     return 6;
-  else if( c[0] < 300 )
-    return 0;
-  else
+  else if( c[0] < 335 )
     return 7;
+  else
+    return 3;
 }
 
 var getColorNameFromIndex = function(i){
@@ -102,11 +122,12 @@ var getColorNameFromIndex = function(i){
 
 var getColorName = function(c)
 {
+  console.log(c);
   if( c[1] < 0.3 && c[2] < 0.2 )
     return "gray";
-  if( c[2] > 0.8 && c[1] < 20 )
+  if( c[2] > 0.8 && c[1] < 0.2 )
     return "white";
-  else if( c[2] < 0.15 )
+  else if( c[2] < 0.2 )
     return "black"
   else if( c[0] < 60 )
     return "red";
@@ -117,7 +138,7 @@ var getColorName = function(c)
   else if( c[0] < 240 )
     return "blue";
   else if( c[0] < 300 )
-    return "grey";
+    return "pink";
   else 
     return "purple"
 }
