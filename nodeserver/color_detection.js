@@ -12,20 +12,18 @@ var colorDetect = function(imageName, res ) {
 
    if( faces.length == 0 )
    {
-     console.log(0);
-     console.log(0);
-     console.log(0);
+     res.send("black");
    }
 
    var face = faces[0];
 //   im.ellipse(face.x + face.width/2, face.y + face.height/2, face.width/2, face.height/2);
    var c = 3;
-   var d = 2;
+   var d = 1.5;
    var col = [0, 0, 0];
    var tot = 0;
    var bodySize = face.height * c;
    var bodyWidth = face.height * d;
-   var bodyYStart = face.y + face.height;
+   var bodyYStart = face.y + face.height + face.height / 4;
    var bodyXStart = face.x + face.width / 2 - bodyWidth / 2;
    for( var i = 0; i < bodySize; i++ )
    {
@@ -52,11 +50,11 @@ var colorDetect = function(imageName, res ) {
 var getColorName = function(c)
 {
   console.log(c);
-  if( c[1] < 40 && c[2] < 26 )
+  if( c[1] < 0.3 && c[2] < 0.2 )
     return "gray";
-  if( c[1] < 15 )
+  if( (c[2] > 0.6 && c[1] < 20) || c[2] > 0.7 )
     return "white";
-  else if( c[2] < 15 )
+  else if( c[2] < 0.15 )
     return "black"
   else if( c[0] < 60 )
     return "red";
