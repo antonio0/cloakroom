@@ -1,6 +1,12 @@
+var active = 5;
+var clothes;
+var curr = "hats";
+
+
 var handleCallback = function () {
 
 };
+
 
 var takePic = function () {
     var scale = 1;
@@ -31,11 +37,27 @@ var takePic = function () {
 
 
 
-var getClothes = function (color) {
-	$.get( "http://178.62.116.18:3002/getRelatedItems?hats=red&jackets=blue" + color, function( data ) {
-	  console.dir(data);
+var getClothes = function (color, type) {
+  console.log("lookign for " + color);
+	$.get( "http://178.62.116.18:3003/getHats?gender=male&color=" + color, function( data ) {
+    clothes = JSON.parse(data);
+    for (var i in clothes.content) {
+      var thing = clothes.content[i];
+      console.dir(thing);
+      var img = $('<img id="dynamic">'); //Equivalent: $(document.createElement('img'))
+      img.attr('src', thing.image.detail);
+      img.attr('id', type + i);
+      img.attr('height', "160");
+      img.attr('class', "garment");
+      img.attr('width', "160");
+      img.appendTo('#hats');
+    }
+    $("#hats5").addClass("active");
+    $(".stage5").fadeIn();
 	});
 }
+
+
 
 
 $(document).ready(function(){
@@ -46,7 +68,7 @@ $(document).ready(function(){
 
   	setTimeout(function() {
   	  //$(".welcome").slideUp("slow");
-  	  $(".stage1").fadeOut();
+  	  $(".stage1").addClass('animated fadeOutDown');
   	}, 800);
 
 
@@ -56,7 +78,7 @@ $(document).ready(function(){
   	}, 1300);
 
   	setTimeout(function() {
-  	  $(".stage2").fadeOut();
+  	  $(".stage2").addClass("animated fadeOutUp");
   	}, 4000);
 
   	// setTimeout(function() {
@@ -69,11 +91,9 @@ $(document).ready(function(){
   	}, 4000);
 
   	setTimeout(function() {
-
-  		// getClothes("white");
-  	  $(".stage5").fadeIn();
+    $(document).bind("keyup", keyup);
+  		getClothes("white", "hats");
   	}, 5000);
-
 
 
   });
@@ -81,3 +101,36 @@ $(document).ready(function(){
 });
 
 
+
+var move = function (direction) {
+  console.log("moving: " + direction);
+  $(".garment").removeClass("active");
+
+  if (direction == "left") {
+    active--;
+    $("#" + curr).animate({"margin-left":"+=160"}, 300);
+  } else {
+    active++;
+    $("#" + curr).animate({"margin-left":"-=160"}, 300);    
+  }
+  $("#" + curr + active).addClass("active");
+}
+
+
+function keyval(n)
+{
+    if (n == null) return 'undefined';
+    var s= pad(3,n);
+    if (n >= 32 && n < 127) s+= ' (' + String.fromCharCode(n) + ')';
+    while (s.length < 9) s+= ' ';
+    return s;
+}
+
+function keyup (e) {
+   if (!e) e= event;
+   if (e.keyCode == 37) {
+    move('left');
+   } else if (e.keyCode == 39) {
+    move('right');
+   }
+}
