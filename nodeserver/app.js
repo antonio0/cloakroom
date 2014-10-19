@@ -144,7 +144,7 @@ app.get("/getHats", function(req,res) {
 
   var request = require('request');
   request.get(
-    "https://api.zalando.com/articles/?category="+gender2+"-hats-caps&color="+color+"&gender="+gender+"&ageGroup=adult&fullText="+color+"%20hat",
+    "https://api.zalando.com/articles/?category="+gender2+"-hats-caps&color="+color+"&gender="+gender+"&ageGroup=adult",
     function(error,response,body){
       if (!error && response.statusCode==200) {
         res.send(body);
