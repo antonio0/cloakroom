@@ -43,12 +43,56 @@ var colorDetect = function(imageName, res ) {
    col[2] /= tot;
 //    im.ellipse(bodyXStart+bodyWidth/2, bodyYStart+bodySize/2,bodyWidth/2, bodySize/2);
 //    im.save('./out.jpg');
-   res.json( {'color' : col } );
+   console.log(col);
+   res.json( {'color' : getColorName(getHSV(col[0], col[1], col[2])) } );
   });
 })
 }
 
-var converToColor = function(c)
+var getColorName = function(c)
 {
+  console.log(c);
+  if( c[1] < 40 && c[2] < 26 )
+    return "gray";
+  if( c[1] < 15 )
+    return "white";
+  else if( c[2] < 15 )
+    return "black"
+  else if( c[0] < 60 )
+    return "red";
+  else if( c[0] < 120 )
+    return "yellow";
+  else if( c[0] < 180 )
+    return "green";
+  else if( c[0] < 240 )
+    return "blue";
+  else if( c[0] < 300 )
+    return "grey";
+  else 
+    return "purple"
+}
 
+var getHSV = function(r,g,b)
+{
+ var computedH = 0;
+ var computedS = 0;
+ var computedV = 0;
+
+ r=r/255; g=g/255; b=b/255;
+ var minRGB = Math.min(r,Math.min(g,b));
+ var maxRGB = Math.max(r,Math.max(g,b));
+
+ // Black-gray-white
+ if (minRGB==maxRGB) {
+  computedV = minRGB;
+  return [0,0,computedV];
+ }
+
+ // Colors other than black-gray-white:
+ var d = (r==minRGB) ? g-b : ((b==minRGB) ? r-g : b-r);
+ var h = (r==minRGB) ? 3 : ((b==minRGB) ? 1 : 5);
+ computedH = 60*(h - d/(maxRGB - minRGB));
+ computedS = (maxRGB - minRGB)/maxRGB;
+ computedV = maxRGB;
+ return [computedH,computedS,computedV];
 }
