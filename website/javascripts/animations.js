@@ -1,5 +1,8 @@
-var active = 5;
-var clothes;
+var hatsActive = 5;
+var jacketsActive = 1;
+var hatsDB;
+var jacketsDB;
+
 var curr = "hats";
 
 
@@ -37,38 +40,72 @@ var takePic = function () {
 
 
 
-var getClothes = function (color, type) {
-  console.log("lookign for " + color);
-	$.get( "http://178.62.116.18:3003/getHats?gender=male&color=" + color, function( data ) {
-    clothes = JSON.parse(data);
+var getClothes = function (color1, color2) {
+      $(".stage4").fadeOut();
+
+	$.get( "http://178.62.116.18:3003/getHats?gender=male&color=" + color1, function( data ) {
+    var clothes = JSON.parse(data);
+    hatsDB = clothes.content;
     for (var i in clothes.content) {
       var thing = clothes.content[i];
       console.dir(thing);
       var img = $('<img id="dynamic">'); //Equivalent: $(document.createElement('img'))
       img.attr('src', thing.image.detail);
-      img.attr('id', type + i);
+      img.attr('id', "hats" + i);
       img.attr('height', "160");
       img.attr('class', "garment");
       img.attr('width', "160");
       img.appendTo('#hats');
+      binder(thing.sku, img);
     }
     $("#hats5").addClass("active");
     $(".stage5").fadeIn();
 	});
+
+  $.get( "http://178.62.116.18:3003/getJackets?gender=male&color=" + color2, function( data ) {
+    var clothes = JSON.parse(data);
+    jacketsDB = clothes.content;
+    for (var i in clothes.content) {
+      var thing = clothes.content[i];
+      console.dir(thing);
+      var img = $('<img id="dynamic">'); //Equivalent: $(document.createElement('img'))
+      img.attr('src', thing.image.detail);
+      img.attr('id', "jackets" + i);
+      img.attr('height', "480");
+      img.attr('class', "garment2");
+      img.attr('width', "480");
+      img.appendTo('#jackets');
+      binder(thing.sku, img);
+      // img.bind('click',function() {
+      //   console.log("IMG No " + i);
+      // });
+    }
+    $("#jackets1").addClass("active");
+    $(".stage5").fadeIn();
+  });
+}
+  
+  function binder(sku, img) {
+    $.get( "http://178.62.116.18:3003/getSiteUrl?sku=" + sku, function(data) {
+      img.bind('click', function() {
+        window.open(data);
+      });
+    });
 }
 
 
 
 
 $(document).ready(function(){
+          $(document).bind("keyup", keyup);
 
   $(".start").click(function () {
 
-  	$(".btn").fadeOut();
+  	$(".start").fadeOut();
 
   	setTimeout(function() {
   	  //$(".welcome").slideUp("slow");
-  	  $(".stage1").addClass('animated fadeOutDown');
+  	  $(".stage1").fadeOut();
   	}, 800);
 
 
@@ -78,42 +115,77 @@ $(document).ready(function(){
   	}, 1300);
 
   	setTimeout(function() {
-  	  $(".stage2").addClass("animated fadeOutUp");
-  	}, 4000);
-
-  	// setTimeout(function() {
-  	//   $(".stage3").fadeIn();
-  	// }, 1300);
-
- 	setTimeout(function() {
-
-  		takePic();
+     $(".stage2").fadeOut();
+     $(".stage3").fadeIn();
   	}, 4000);
 
   	setTimeout(function() {
-    $(document).bind("keyup", keyup);
-  		getClothes("white", "hats");
-  	}, 5000);
+  	  $(".stage3").fadeIn();
+            takePic();
+  	}, 6000);
 
+    setTimeout(function() {
+      $(".stage3").fadeOut();
+
+      $(".stage4").fadeIn();
+
+      getClothes("black", "green");
+
+    }, 8000);
 
   });
 
 });
 
+var updateInfo = function () {
+  $("#garmentType").text((curr == 'hats') ? 'Hat' : 'Jacket');
+  var details;
+  if (curr == 'hats') {
+    details = hatsDB[hatsActive].brand + ": " + hatsDB[hatsActive]['name'];
+  } else {
+    details = jacketsDB[jacketsActive].brand + ": " + jacketsDB[jacketsActive]['name'];
+  }
+  $("#garmentDetails").text(details);
+
+}
 
 
 var move = function (direction) {
   console.log("moving: " + direction);
   $(".garment").removeClass("active");
+  $(".garment2").removeClass("active");
+
+  var offset = (curr == 'hats') ? 160 : 340;
 
   if (direction == "left") {
-    active--;
-    $("#" + curr).animate({"margin-left":"+=160"}, 300);
-  } else {
-    active++;
-    $("#" + curr).animate({"margin-left":"-=160"}, 300);    
+
+    if (curr == 'hats') {
+      hatsActive--;
+    } else {
+      jacketsActive--;
+    }
+
+    $("#" + curr).animate({"left":"+="+offset}, 150);
+  } else if (direction == "right") {
+    if (curr == 'hats') {
+      hatsActive++;
+    } else {
+      jacketsActive++;
+    }
+
+    $("#" + curr).animate({"left":"-=" +offset}, 150);    
+  } else if (direction == "down") {
+    curr = "jackets";
+  } else if (direction == "up") {
+    curr = "hats";
   }
-  $("#" + curr + active).addClass("active");
+
+
+
+
+  $("#hats" + hatsActive).addClass("active");
+  $("#jackets" + jacketsActive).addClass("active");
+  updateInfo();
 }
 
 
@@ -128,9 +200,20 @@ function keyval(n)
 
 function keyup (e) {
    if (!e) e= event;
-   if (e.keyCode == 37) {
-    move('left');
-   } else if (e.keyCode == 39) {
-    move('right');
+   if (e.keyCode == 37)
+   {
+     move('left');
+   }
+   else if (e.keyCode == 39)
+   {
+     move('right');
+   }
+   else if (e.keyCode == 38)
+   {
+     move('up');
+   }
+   else if (e.keyCode == 40)
+   {
+     move('down');
    }
 }
