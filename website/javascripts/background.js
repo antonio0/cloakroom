@@ -1,4 +1,4 @@
-var container = document.getElementById('background');
+var container = document.getElementById('bg');
 var renderer = new FSS.WebGLRenderer();
 var scene = new FSS.Scene();
 var light = new FSS.Light('#111122', '#FF0022');
