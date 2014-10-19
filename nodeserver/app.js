@@ -70,6 +70,22 @@ app.get('/getCategories', function(req,res) {
 
 });
 
+app.get('/getSiteUrl', function(req,res) {
+  var sku = req.param('sku');
+
+  request.get(
+    'https://api.zalando.com/articles/'+sku,
+    function(error, response, body) {
+      if (!error && response.statusCode == 200) {
+        var body = JSON.parse(body);
+        res.send(body.shopUrl);
+      }
+    }
+  );
+
+});
+
+
 // Get "wear it with" list for a random item of a given color,type,gender
 app.get('/getRelatedItems', function (req, res) {
 
