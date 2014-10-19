@@ -6,7 +6,15 @@ var bodyParser = require('body-parser');
 var formidable = require('formidable');
 var request = require('request');
 
+
 app.use(express.static(path.join(__dirname, 'static')));
+
+app.all('/*', function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorisation-Token");
+        next();
+      });
+
 
 app.get('/', function (req, res) {
   res.send('Hello World!');
@@ -21,7 +29,7 @@ app.post('/color_detect', function(req, res) {
   });  
 })
 
-var server = app.listen(3002, function () {
+var server = app.listen(3003, function () {
 
   var host = server.address().address
   var port = server.address().port
