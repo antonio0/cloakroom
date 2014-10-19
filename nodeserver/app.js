@@ -1,16 +1,19 @@
 var express = require('express')
-var detect = require('./color_detection.js');
 var app     = express()
 var path    = require('path');
-var bodyParser = require('body-parser');
-var formidable = require('formidable');
 var request = require('request');
+var formidable = require('formidable');
+var detect = require('./color_detection.js');
 
 app.use(express.static(path.join(__dirname, 'static')));
+//app.use(express.urlencoded);
+//app.use(express.json());
 
-app.get('/', function (req, res) {
-  res.send('Hello World!');
-})
+app.all('/*', function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorisation-Token");
+        next();
+      });
 
 app.post('/color_detect', function(req, res) {
   var form = new formidable.IncomingForm();
@@ -21,15 +24,21 @@ app.post('/color_detect', function(req, res) {
   });  
 })
 
-var server = app.listen(3002, function () {
+app.get('/', function (req, res) {
+  res.send('Hello World!')
+})
 
+app.post('/clothes', function (req, res) {
+  var color = req.param('color');
+});
+
+var server = app.listen(3003, function () {
   var host = server.address().address
   var port = server.address().port
 
   console.log('Example app listening at http://%s:%s', host, port)
 
 });
-
 
 // get categories list for item of given SKU
 app.get('/getCategories', function(req,res) {
@@ -88,7 +97,7 @@ app.get('/getRelatedItems', function (req, res) {
                         if (!error && response.statusCode == 200) {
                             var body = JSON.parse(body);
                             var recommendedArticles = body[1].recommendedArticles;
-                          /*  for (entry in recommendedArticles) {
+                            for (entry in recommendedArticles) {
                               var url = entry.link;
                               url = url.split(":").getLast();
                               var sku = url[url.length-1];
@@ -101,7 +110,7 @@ app.get('/getRelatedItems', function (req, res) {
                                 }
                               );
                             }
-                  */
+
                             res.send(recommendedArticles);
                         }
                       }
@@ -117,7 +126,59 @@ app.get('/getRelatedItems', function (req, res) {
   );
 });
 
+app.get("/getJackets", function(req,res) {
+  var color = req.param('color');
+  var gender = req.param('gender');
 
+  var gender2 = 'mens';
+  if (gender == 'female') gender2 = 'womens';
+
+  var request = require('request');
+  request.get(
+    "https://api.zalando.com/articles/?category="+gender2+"-clothing-jackets&color="+color+"&gender="+gender+"&ageGroup=adult&fullText="+color+"%20jacket",
+    function(error,response,body){
+      if (!error && response.statusCode==200) {
+        res.send(body);
+      }
+    }
+  );
+});
+
+app.get("/getHats", function(req,res) {
+  var color = req.param('color');
+  var gender = req.param('gender');
+
+  var gender2 = 'mens';
+  if (gender == 'female') gender2 = 'womens';
+
+  var request = require('request');
+  request.get(
+    "https://api.zalando.com/articles/?category="+gender2+"-hats-caps&color="+color+"&gender="+gender+"&ageGroup=adult",
+    function(error,response,body){
+      if (!error && response.statusCode==200) {
+        res.send(body);
+      }
+    }
+  );
+});
+
+app.get("/getTrousers", function(req,res) {
+  var color = req.param('color');
+  var gender = req.param('gender');
+
+  var gender2 = 'mens';
+  if (gender == 'female') gender2 = 'womens';
+
+  var request = require('request');
+  request.get(
+    "https://api.zalando.com/articles/?category="+gender2+"-trousers-chinos&color="+color+"&gender="+gender+"&ageGroup=adult&fullText="+color+"%20trousers",
+    function(error,response,body){
+      if (!error && response.statusCode==200) {
+        res.send(body);
+      }
+    }
+  );
+});
 
 app.post('/clothes', function (req, res) {
   var color = req.param('color');
@@ -134,4 +195,3 @@ app.post('/clothes', function (req, res) {
     }
   );
 })
-
